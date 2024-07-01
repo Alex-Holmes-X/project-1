@@ -1,3 +1,14 @@
+//---------------------------------------------------------
+// preloader
+//---------------------------------------------------------
+// var loader = document.getElementById("loader");
+// var showMap = document.getElementById('map');
+
+// window.addEventListener("load", function() {
+//   loader.style.display = none;
+//   showMap.style.display = contents;
+// });
+
 
 //---------------------------------------------------------
 // Leaflet Map 

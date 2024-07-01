@@ -5,8 +5,12 @@
 html, body, #map {
     height: 100%;
     width: 100vw;
+    
 }
 
+/* #map {
+  display: none;
+} */
 
 #selectContainer {
     position: fixed;
@@ -22,9 +26,10 @@ html, body, #map {
   }
 
   #preloader {
-    background: #ebfbff url(./libraries/images/loader.gif) no-repeat center center;
+    background: #ebfbff url(libraries/images/loader.gif) no-repeat center center;
     height: 100vh;
     width: 100%;
     position: fixed;
     z-index: 100;
+    overflow: visible;
     }
