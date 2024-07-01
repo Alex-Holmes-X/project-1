@@ -16,10 +16,8 @@
 
 var map = L.map('map').fitWorld();
 
-map.locate({
-  setView: true, 
-  maxZoom: 6,
-});
+// TODO maybe move this into the document ready section
+
 
 //---------------------------------------------------------
 // View layers
@@ -40,31 +38,89 @@ var basemaps = {
   "Satellite": satellite
 };
 
-layerControl = L.control.layers(basemaps).addTo(map);
-
 //---------------------------------------------------------
 // buttons
 //---------------------------------------------------------
 
 var countryInfo = L.easyButton('fa fa-users', function(btn, map) {
-    $('#countryInfoModal').modal('show');
+  $('#countryInfoModal').modal('show');
 });
 countryInfo.addTo(map);
 
 var newsInfo = L.easyButton('fa fa-newspaper-o', function(btn, map) {
-  $('#newsModal').modal('show');
+$('#newsModal').modal('show');
 });
 newsInfo.addTo(map);
 
 var weatherInfo = L.easyButton('fa fa-cloud', function(btn, map) {
-  $('#weatherModal').modal('show');
+$('#weatherModal').modal('show');
 });
 weatherInfo.addTo(map);
 
 var currencyInfo = L.easyButton('fa fa-money', function(btn, map) {
-  $('#currencyModal').modal('show');
+$('#currencyModal').modal('show');
 });
 currencyInfo.addTo(map);
+
+var holidayInfo = L.easyButton('fa fa-sun', function(btn, map) {
+  $('#publicHolidayModal').modal('show');
+  });
+  holidayInfo.addTo(map);
+
+
+//---------------------------------------------------------
+// Layers and icons
+//---------------------------------------------------------
+
+
+var airports = L.markerClusterGroup({
+  polygonOptions: {
+    fillColor: "#fff",
+    color: "#000",
+    weight: 2,
+    opacity: 1,
+    fillOpacity: 0.5
+  }
+});
+
+var cities = L.markerClusterGroup({
+  polygonOptions: {
+    fillColor: "#fff",
+    color: "#000",
+    weight: 2,
+    opacity: 1,
+    fillOpacity: 0.5
+  }
+});
+
+var overlays = {
+  'Airports': airports,
+  'Cities': cities
+};
+
+
+var airportIcon = L.ExtraMarkers.icon({
+  prefix: "fa",
+  icon: "fa-plane",
+  iconColor: "black",
+  markerColor: "white",
+  shape: "square"
+});
+
+var cityIcon = L.ExtraMarkers.icon({
+  prefix: "fa",
+  icon: "fa-city",
+  markerColor: "green",
+  shape: "square"
+});
+
+layerControl = L.control.layers(basemaps,overlays).addTo(map);
+
+airports.addTo(map);
+cities.addTo(map);
+
+
+
 
 
 // --------------------------------------------------
@@ -92,9 +148,20 @@ $('#exampleModal').on('hidden.bs.modal', function () {
  $('#fromAmount').val(1);
 });
 
-
+var currentIsoLocation = '';
+var mapData = null;
+var localCurrency = null;
+var holidayNames = [];
+var holidayDates = [];
 
 $(document).ready(function() { 
+
+  map.locate({
+    setView: true, 
+    maxZoom: 6,
+  });
+
+    // TODO make the change event here on initial load
 
     // This is used to find the current position
     navigator.geolocation.getCurrentPosition(showNewPosition);
@@ -102,9 +169,6 @@ $(document).ready(function() {
         latitude = position.coords.latitude;
         longitude = position.coords.longitude;
 
-        console.log(latitude);
-        console.log(longitude);
-      
 
 
     // This call is to create the drop down box options
@@ -148,51 +212,117 @@ $(document).ready(function() {
           // console.log(JSON.stringify(result));
     
           if (result.status.name == 'ok') {
-            var currentIsoLocation = result.data.results[0].components['ISO_3166-1_alpha-2'];        
+
+            // currentIsoLocation = result.data.results[0].components['ISO_3166-1_alpha-2'];        
+            currentIsoLocation = result.data.countryCode;
+            $('#countrySelect').val(currentIsoLocation).change();
             
-            // Test countryCode below 
-            //  var currentIsoLocation = 'US'; 
+            // Function for creating the airports (uses the current location from this call)
+            // function getAirports () {
+            //   $.ajax({
+            //     url: "./libraries/php/countryAirports.php",
+            //     type: 'POST',
+            //     dataType: 'json',
+            //     data: {
+            //       country: currentIsoLocation,
+            //     },                
+            //     success: function(result) {            
+            //         // console.log(JSON.stringify(result));            
+            //         if (result.status.name == 'ok') {            
+            //           result.data.forEach(function (item) {
+            //             L.marker([item.lat, item.lng], { icon: airportIcon })
+            //               .bindTooltip(item.name, { direction: "top", sticky: true })
+            //               .addTo(airports);                          
+            //           });
 
+                      
+            //         }            
+            //     },
+            //     error: function(jqXHR, textStatus, errorThrown) {
+                    
+            //         console.log(jqXHR);
+            //     }
+            //   })
+            // }
 
-            $.ajax({   
-              url: "./libraries/php/geoJSONCountryBorders.php",
-              type: 'POST',
-              dataType: 'json',
+            // // Function for creating cities 
+
+            // function getCities() {
+            //   $.ajax({
+            //     url: "./libraries/php/countryCities.php",
+            //     type: "POST",
+            //     dataType: "json",
+            //     data: {
+            //       country: currentIsoLocation 
+            //     },
+            //     success: function (result) {  
+            //       if (result.status.code == 200) {
+                    
+            //         result.data.forEach(function (item) {
+            //           if(item.population > 100000){
+            //             L.marker([item.lat, item.lng], { icon: cityIcon })
+            //             .bindTooltip(
+            //               "<div class='col text-center'><strong>" +
+            //                 item.toponymName +
+            //                 "</strong><br><i>(" +
+            //                 numeral(item.population).format("0,0") +
+            //                 ")</i></div>",
+            //               { direction: "top", sticky: true }
+            //             )
+            //             .addTo(cities);
+            //           }
+                      
+            //         });
+            //       } 
+            //     },
+            //     error: function (jqXHR, textStatus, errorThrown) {
+            //       console.log(jqXHR)
+            //     }
+            //   });
+            // }
+
+            // getAirports();
+            // getCities();
+
+            // $.ajax({   
+            //   url: "./libraries/php/geoJSONCountryBorders.php",
+            //   type: 'POST',
+            //   dataType: 'json',
               
-              success: function(result) {
+            //   success: function(result) {
         
-                  // console.log(JSON.stringify(result));
+            //       // console.log(JSON.stringify(result));
         
-                  if (result.status.name == 'ok') {
+            //       if (result.status.name == 'ok') {
                           
-                      for (const location of result.data) {
+            //           for (const location of result.data) {
                         
-                        var myStyle = {
-                          "color": "#00b8d0",
-                          "weight": 5,
-                          "opacity": 0.65
-                      };
+            //             var myStyle = {
+            //               "color": "#00b8d0",
+            //               "weight": 5,
+            //               "opacity": 0.65
+            //           };
 
-                        if(location.properties.iso_a2 === currentIsoLocation) {
-                          var mapData = location.geometry;
+            //             if(location.properties.iso_a2 === currentIsoLocation) {
+            //               mapData = location.geometry;
 
-                          L.geoJSON(mapData, {
-                            style: myStyle
-                          }).addTo(map);
-                        } 
-                      }
+            //               L.geoJSON(mapData, {
+            //                 style: myStyle
+            //               }).addTo(map);
+            //             } 
+            //           }
                       
                                             
         
-                  }         
+            //       }         
         
-              },
-              error: function(jqXHR, textStatus, errorThrown) {
+            //   },
+            //   error: function(jqXHR, textStatus, errorThrown) {
                   
-                  console.log(jqXHR);
-              }
+            //       console.log(jqXHR);
+            //   }
         
-            })
+            // })
 
 
             $.ajax({   
@@ -205,11 +335,14 @@ $(document).ready(function() {
               
               success: function(result) {
         
-                  // console.log(JSON.stringify(result));
+                  console.log(JSON.stringify(result));
         
                   if (result.status.name == 'ok') {
                     
-              
+                    var capitalCity = (result.data[0].capital);
+                    localCurrency = (result.data[0].currencyCode);
+                    var countryCode = (result.data[0].countryCode);
+                    
                     var popluationTotal = numeral(result.data[0].population).format('0,0');
                     var areaSqKm = numeral(result.data[0].areaInSqKm).format('0,0');
 
@@ -223,6 +356,113 @@ $(document).ready(function() {
                     $('#areaInSqKm').html(areaSqKm);
                     $('#postalCodeFormat').html(result.data[0].postalCodeFormat);
 
+
+                    $.ajax({   
+                      url: "./libraries/php/weatherInformation.php",
+                      type: 'POST',
+                      dataType: 'json',
+                      data: {
+                        capital: capitalCity,
+                      },
+                      
+                      success: function(result) {
+                
+                          // console.log(JSON.stringify(result));
+                
+                          if (result.status.name == 'ok') {                   
+                            
+                            // Todays Forcast
+                            $('#todayConditions').html(result.data.forecast.forecastday[0].day.condition.text);
+                            $('#todayIcon').attr("src", result.data.forecast.forecastday[0].day.condition.icon);
+                            $('#todayMaxTemp').html(numeral(result.data.forecast.forecastday[0].day.maxtemp_c).format('0'));
+                            $('#todayMinTemp').html(numeral(result.data.forecast.forecastday[0].day.mintemp_c).format('0'));                     
+                            
+                            // Tomorrows Forecast                            
+        
+                            $('#day1Date').html(Date.parse("tomorrow").toString("dddd dS"));
+                            $('#day1Icon').attr("src", result.data.forecast.forecastday[1].day.condition.icon);
+                            $('#day1MaxTemp').html(numeral(result.data.forecast.forecastday[1].day.maxtemp_c).format('0'));
+                            $('#day1MinTemp').html(numeral(result.data.forecast.forecastday[1].day.mintemp_c).format('0'));
+        
+                            // +2 Day Forecast
+                          
+                            $('#day2Date').html(Date.parse("t + 2d").toString("dddd dS"));
+                            $('#day2Icon').attr("src", result.data.forecast.forecastday[2].day.condition.icon);
+                            $('#day2MaxTemp').html(numeral(result.data.forecast.forecastday[2].day.maxtemp_c).format('0'));
+                            $('#day2MinTemp').html(numeral(result.data.forecast.forecastday[2].day.mintemp_c).format('0'));
+        
+                            // Last Updated
+                            var lastUpdated = Date.parse(result.data.current.last_updated).toString("ddd dS, @ HH:mm");
+                            
+                            $('#lastUpdated').html(lastUpdated);
+                            
+                            
+                          }         
+                
+                      },
+                      error: function(jqXHR, textStatus, errorThrown) {
+                          
+                          console.log(jqXHR);
+                      }
+                
+                    })
+
+                    // $.ajax({   
+                    //   url: "./libraries/php/currencyRates.php",
+                    //   type: 'POST',
+                    //   dataType: 'json',
+                    //   data: {
+                    //     currency: localCurrency,
+                    //   },
+                      
+                    //   success: function(result) {
+                
+                    //       console.log(JSON.stringify(result));
+        
+                    //       if (result.status.name == 'ok') {                 
+                    //         console.log(localCurrency);
+                    //         $('#localCurrency').html(localCurrency);
+                            
+                    //       }         
+                
+                    //   },
+                    //   error: function(jqXHR, textStatus, errorThrown) {
+                          
+                    //       console.log(jqXHR);
+                    //   }
+                
+                    // })
+
+                    // $.ajax({
+                    //   url: "./libraries/php/publicHolidays.php",
+                    //   type: 'POST',
+                    //   dataType: 'json',
+                    //   data: {
+                    //     country: countryCode,
+                    //   },
+                      
+                    //   success: function(result) {
+                
+                    //       console.log(JSON.stringify(result));
+                
+                    //       if (result.status.name == 'ok') {
+                              
+                    //         for(const holiday of result.data) {
+                    //           var holidayDate = Date.parse(holiday.date).toString("MMMM dS")
+                              
+                    //           $('#holidayName').append(`<option>${holiday.name}</option>`);
+                    //           $('#holidayDate').append(`<option>${holidayDate}</option>`)
+                    //       }
+                            
+                    //         }
+                
+                    //   },
+                    //   error: function(jqXHR, textStatus, errorThrown) {
+                          
+                    //       console.log(jqXHR);
+                    //   }
+                    // })
+
                   }         
         
               },
@@ -233,55 +473,7 @@ $(document).ready(function() {
         
             })
 
-            $.ajax({   
-              url: "./libraries/php/weatherInformation.php",
-              type: 'POST',
-              dataType: 'json',
-              data: {
-                latitude: latitude,
-                longitude: longitude
-              },
-              
-              success: function(result) {
-        
-                  // console.log(JSON.stringify(result));
-        
-                  if (result.status.name == 'ok') {                   
-                    
-                    // Todays Forcast
-                    $('#todayConditions').html(result.data.forecast.forecastday[0].day.condition.text);
-                    $('#todayIcon').attr("src", result.data.forecast.forecastday[0].day.condition.icon);
-                    $('#todayMaxTemp').html(result.data.forecast.forecastday[0].day.maxtemp_c);
-                    $('#todayMinTemp').html(result.data.forecast.forecastday[0].day.mintemp_c);                     
-                    
-                    // Tomorrows Forecast
-                    // TODO Change this to the date not the forecast
-
-                    $('#day1Date').html(Date.parse("tomorrow").toString("MMMM dS"));
-                    $('#day1Icon').attr("src", result.data.forecast.forecastday[1].day.condition.icon);
-                    $('#day1MaxTemp').html(result.data.forecast.forecastday[1].day.maxtemp_c);
-                    $('#day1MinTemp').html(result.data.forecast.forecastday[1].day.mintemp_c);
-
-                    // +2 Day Forecast
-                    // TODO Change this to the date not the forecast
-                    $('#day2Date').html(Date.parse("t + 2d").toString("MMMM dS"));
-                    $('#day2Icon').attr("src", result.data.forecast.forecastday[2].day.condition.icon);
-                    $('#day2MaxTemp').html(result.data.forecast.forecastday[2].day.maxtemp_c);
-                    $('#day2MinTemp').html(result.data.forecast.forecastday[2].day.mintemp_c);
-
-                    // Last Updated
-                    $('#lastUpdated').html(result.data.current.last_updated);
-                    
-                    
-                  }         
-        
-              },
-              error: function(jqXHR, textStatus, errorThrown) {
-                  
-                  console.log(jqXHR);
-              }
-        
-            })
+            
 
             $.ajax({   
               url: "./libraries/php/latestNewsInfo.php",
@@ -349,76 +541,39 @@ $(document).ready(function() {
         
             })
 
-            $.ajax({   
-              url: "./libraries/php/currencyNames.php",
-              type: 'POST',
-              dataType: 'json',
+            
+
+            // $.ajax({   
+            //   url: "./libraries/php/exchangeRateUpdate.php",
+            //   type: 'POST',
+            //   dataType: 'json',
               
-              success: function(result) {
+            //   success: function(result) {
         
-                  // console.log(JSON.stringify(result));
-                  // BOOKMARK dropdown currency
-                  if (result.status.name == 'ok') {
+            //       // console.log(JSON.stringify(result));
 
-                    //CurrencyArray - Gets all the country currency codes
-                    var currencyArray = [];                    
-                    for (let i = 0; i < result.data.supported_codes.length; i++) {
-                      currencyArray.push(result.data.supported_codes[i][0])
-                    }
-                    // console.log(currencyArray);
+            //       if (result.status.name == 'ok') {
 
-
-                    
-                    // empty array for exchange rates
-                    var exchangeRates = [];
-
-                    // This call gets the current exchange rates
-
-                    $.ajax({
-                      url: "./libraries/php/currencyRates.php",
-                      type: 'POST',
-                      dataType: 'json',
-                      
-                      success: function(result) {
-                
-                          // console.log(JSON.stringify(result));
-                
-                          if (result.status.name == 'ok') {
-                            
-                            exchangeRates.push(result.data.conversion_rates);
-                            console.log(exchangeRates);
-                            }
-                
-                      },
-                      error: function(jqXHR, textStatus, errorThrown) {
-                          
-                          console.log(jqXHR);
-                      }
-                    }) 
-
-
-
-                    // This sets the drop down menu
-                    
-                    for(const currency of result.data.supported_codes) {
-
-                        
-                      $('#exchangeRate').append(`<option id="${currency[0]}" value="${exchangeRates[0]}">${currency[1]}</option>`);
-
-                      
-                  } 
-                  console.log(exchangeRates[0].AFN);
-                                                           
-        
-                  }         
-        
-              },
-              error: function(jqXHR, textStatus, errorThrown) {
                   
-                  console.log(jqXHR);
-              }
+                    
+            //         for(const currency of result.data ) {
+
+                       
+            //           $('#exchangeRate').append(`<option id="${currency[0]}" value="${currency[2]}">${currency[1]}</option>`);
+
+                      
+            //       } 
+                                                                          
         
-            })
+            //       }         
+        
+            //   },
+            //   error: function(jqXHR, textStatus, errorThrown) {
+                  
+            //       console.log(jqXHR);
+            //   }
+        
+            // })
 
             // Next one here
 
@@ -436,13 +591,460 @@ $(document).ready(function() {
 // This is the end of the document ready call
 })
 
-// Below is for anthing that changes on selection of a different country
 
-$('#countrySelect').change(function() { 
+$('#countrySelect').on('change', function() {
+
+  // TODO Change border to clear
+  
+  
+
+  navigator.geolocation.getCurrentPosition(showNewPosition);
+  function showNewPosition(position) {
+      latitude = position.coords.latitude;
+      longitude = position.coords.longitude;
+
+      // console.log(latitude);
+      // console.log(longitude);
 
 
+  // Get capital city lat / long
 
+
+  $.ajax({
+    url: "./libraries/php/currentLocationInfo.php",
+    type: 'POST',
+    dataType: 'json',
+    data: {
+        latitude: latitude,
+        longitude: longitude
+        
+        
+    },
+    success: function(result) {
+  
+        // console.log(JSON.stringify(result));
+  
+        if (result.status.name == 'ok') {
+
+          // currentIsoLocation = result.data.results[0].components['ISO_3166-1_alpha-2'];        
+          currentIsoLocation = $('#countrySelect').val();
+          // console.log(currentIsoLocation);
+          
+          // Function for creating the airports (uses the current location from this call)
+          function getAirports () {
+            $.ajax({
+              url: "./libraries/php/countryAirports.php",
+              type: 'POST',
+              dataType: 'json',
+              data: {
+                country: currentIsoLocation,
+              },                
+              success: function(result) {            
+                  // console.log(JSON.stringify(result));            
+                  if (result.status.name == 'ok') {            
+                    result.data.forEach(function (item) {
+                      L.marker([item.lat, item.lng], { icon: airportIcon })
+                        .bindTooltip(item.name, { direction: "top", sticky: true })
+                        .addTo(airports);                          
+                    });
+
+                    
+                  }            
+              },
+              error: function(jqXHR, textStatus, errorThrown) {
+                  
+                  console.log(jqXHR);
+              }
+            })
+          }
+
+          // Function for creating cities 
+
+          function getCities() {
+            $.ajax({
+              url: "./libraries/php/countryCities.php",
+              type: "POST",
+              dataType: "json",
+              data: {
+                country: currentIsoLocation 
+              },
+              success: function (result) {  
+                if (result.status.code == 200) {
+                  
+                  result.data.forEach(function (item) {
+                    if(item.population > 100000){
+                      L.marker([item.lat, item.lng], { icon: cityIcon })
+                      .bindTooltip(
+                        "<div class='col text-center'><strong>" +
+                          item.toponymName +
+                          "</strong><br><i>(" +
+                          numeral(item.population).format("0,0") +
+                          ")</i></div>",
+                        { direction: "top", sticky: true }
+                      )
+                      .addTo(cities);
+                    }
+                    
+                  });
+                } 
+              },
+              error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR)
+              }
+            });
+          }
+
+          getAirports();
+          getCities();
+
+       
+          $.ajax({   
+            url: "./libraries/php/geoJSONCountryBorders.php",
+            type: 'POST',
+            dataType: 'json',
+            
+            success: function(result) {
+
+                
+      
+                // console.log(JSON.stringify(result));
+                
+                if (result.status.name == 'ok') {
+                        
+                    for (const location of result.data) {
+                      
+                      var myStyle = {
+                        "color": "#00b8d0",
+                        "weight": 5,
+                        "opacity": 0.65
+                    };
+
+                      if(location.properties.iso_a2 === currentIsoLocation) {
+                        mapData = location.geometry;
+
+
+                        L.geoJSON(mapData, {
+                          style: myStyle
+                        }).addTo(map);
+                      } 
+                    }
+                    
+                                          
+      
+                }         
+      
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                
+                console.log(jqXHR);
+            }
+      
+          })
+
+
+          $.ajax({   
+            url: "./libraries/php/countryInformation.php",
+            type: 'POST',
+            dataType: 'json',
+            data: {
+              countryCode: currentIsoLocation
+            },
+            
+            success: function(result) {
+      
+                // console.log(JSON.stringify(result));
+      
+                if (result.status.name == 'ok') {
+                  
+                  var capitalCity = (result.data[0].capital);
+                  localCurrency = (result.data[0].currencyCode);
+                  countryCode = (result.data[0].countryCode);
+
+                  var popluationTotal = numeral(result.data[0].population).format('0,0');
+                  var areaSqKm = numeral(result.data[0].areaInSqKm).format('0,0');
+
+
+                  $('#capitalCity').html(result.data[0].capital);
+                  $('#continent').html(result.data[0].continentName);
+                  $('#languages').html(result.data[0].languages);
+                  $('#currency').html(result.data[0].currencyCode);
+                  $('#isoAlpha3').html(result.data[0].isoAlpha3);
+                  $('#population').html(popluationTotal);
+                  $('#areaInSqKm').html(areaSqKm);
+                  $('#postalCodeFormat').html(result.data[0].postalCodeFormat);
+
+
+                  $.ajax({   
+                    url: "./libraries/php/weatherInformation.php",
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                      capital: capitalCity,
+                    },
+                    
+                    success: function(result) {
+              
+                        // console.log(JSON.stringify(result));
+              
+                        if (result.status.name == 'ok') {                   
+                          
+                          // Todays Forcast
+                          $('#todayConditions').html(result.data.forecast.forecastday[0].day.condition.text);
+                          $('#todayIcon').attr("src", result.data.forecast.forecastday[0].day.condition.icon);
+                          $('#todayMaxTemp').html(numeral(result.data.forecast.forecastday[0].day.maxtemp_c).format('0'));
+                          $('#todayMinTemp').html(numeral(result.data.forecast.forecastday[0].day.mintemp_c).format('0'));                     
+                          
+                          // Tomorrows Forecast                            
+      
+                          $('#day1Date').html(Date.parse("tomorrow").toString("dddd dS"));
+                          $('#day1Icon').attr("src", result.data.forecast.forecastday[1].day.condition.icon);
+                          $('#day1MaxTemp').html(numeral(result.data.forecast.forecastday[1].day.maxtemp_c).format('0'));
+                          $('#day1MinTemp').html(numeral(result.data.forecast.forecastday[1].day.mintemp_c).format('0'));
+      
+                          // +2 Day Forecast
+                        
+                          $('#day2Date').html(Date.parse("t + 2d").toString("dddd dS"));
+                          $('#day2Icon').attr("src", result.data.forecast.forecastday[2].day.condition.icon);
+                          $('#day2MaxTemp').html(numeral(result.data.forecast.forecastday[2].day.maxtemp_c).format('0'));
+                          $('#day2MinTemp').html(numeral(result.data.forecast.forecastday[2].day.mintemp_c).format('0'));
+      
+                          // Last Updated
+                          var lastUpdated = Date.parse(result.data.current.last_updated).toString("ddd dS, @ HH:mm");
+                          
+                          $('#lastUpdated').html(lastUpdated);
+                          
+                          
+                        }         
+              
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        
+                        console.log(jqXHR);
+                    }
+              
+                  })
+
+                  $.ajax({
+                    url: "./libraries/php/capitalCityLatLng.php",
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                      captialName: capitalCity,
+                    },
+                    
+                    success: function(result) {
+                
+                        // console.log(JSON.stringify(result));
+                
+                        if (result.status.name == 'ok') {
+                             
+                          var cityLatitude = (result.data.lat);
+                          var cityLongitude = (result.data.lng);
+                          // console.log(cityLatitude);
+
+                          map.flyTo([cityLatitude, cityLongitude]);
+                        
+                          }
+                
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        
+                        console.log(jqXHR);
+                    }
+                  })
+
+                  // $.ajax({   
+                  //   url: "./libraries/php/currencyRates.php",
+                  //   type: 'POST',
+                  //   dataType: 'json',
+                  //   data: {
+                  //     currency: localCurrency,
+                  //   },
+                    
+                  //   success: function(result) {
+              
+                  //       console.log(JSON.stringify(result));
+      
+                  //       if (result.status.name == 'ok') {                 
+                  //         console.log(localCurrency);
+                  //         $('#localCurrency').html(localCurrency);
+                          
+                  //       }         
+              
+                  //   },
+                  //   error: function(jqXHR, textStatus, errorThrown) {
+                        
+                  //       console.log(jqXHR);
+                  //   }
+              
+                  // })
+
+
+                  $.ajax({
+                    url: "./libraries/php/publicHolidays.php",
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                      country: countryCode,
+                    },
+                    
+                    success: function(result) {
+              
+                        console.log(JSON.stringify(result));
+
+
+              
+                        if (result.status.name == 'ok') {
+                            console.log(countryCode);
+                                                                             
+
+                          for(const holiday of result.data) {
+                            var holidayDate = Date.parse(holiday.date).toString("MMMM dS")
+                            
+                            $('#holidayName').append(`<option>${holiday.name}</option>`);
+                            $('#holidayDate').append(`<option>${holidayDate}</option>`);
+                        }
+                          
+                          
+                          }
+              
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        
+                        console.log(jqXHR);
+                    }
+                  })
+                  
+
+                  
+
+                }         
+      
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                
+                console.log(jqXHR);
+            }
+      
+          })
+
+          
+
+          $.ajax({   
+            url: "./libraries/php/latestNewsInfo.php",
+            type: 'POST',
+            dataType: 'json',
+            data: {
+              country: currentIsoLocation
+            },
+            
+            success: function(result) {
+      
+                // console.log(JSON.stringify(result));
+      
+                if (result.status.name == 'ok') {  
+                  
+                  // Top Story 1
+                  var topStory1Icon = (result.data[0].image_url)
+                  $('#topStory1Image').attr('src', topStory1Icon);
+                  $('#topStoryTitle1').html(result['data'][0]['title'])
+                  var topStory1Url = (result.data[0].link)
+                  $('#topStoryTitle1').attr('href', topStory1Url);
+                  $('#topStory1Source').html(result['data'][0]['source_id']);
+
+                  // Top Story 2
+                  var topStory2Icon = (result.data[1].image_url)
+                  $('#topStory2Image').attr('src', topStory2Icon);
+                  $('#topStoryTitle2').html(result['data'][1]['title'])
+                  var topStory2Url = (result.data[1].link)
+                  $('#topStoryTitle2').attr('href', topStory2Url);
+                  $('#topStory2Source').html(result['data'][1]['source_id']); 
+
+                  // Top Story 3
+                  var topStory3Icon = (result.data[2].image_url)
+                  $('#topStory3Image').attr('src', topStory3Icon);
+                  $('#topStoryTitle3').html(result['data'][2]['title'])
+                  var topStory3Url = (result.data[2].link)
+                  $('#topStoryTitle3').attr('href', topStory3Url);
+                  $('#topStory3Source').html(result['data'][2]['source_id']);
+
+                  // Top Story 4
+                  var topStory4Icon = (result.data[3].image_url)
+                  $('#topStory4Image').attr('src', topStory4Icon);
+                  $('#topStoryTitle4').html(result['data'][3]['title'])
+                  var topStory4Url = (result.data[3].link)
+                  $('#topStoryTitle4').attr('href', topStory4Url);
+                  $('#topStory4Source').html(result['data'][3]['source_id']);
+
+                  // Top Story 5
+                  var topStory5Icon = (result.data[4].image_url)
+                  $('#topStory5Image').attr('src', topStory5Icon);
+                  $('#topStoryTitle5').html(result['data'][4]['title'])
+                  var topStory5Url = (result.data[4].link)
+                  $('#topStoryTitle5').attr('href', topStory5Url);
+                  $('#topStory5Source').html(result['data'][4]['source_id']);
+
+                  
+                  
+                }         
+      
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                
+                console.log(jqXHR);
+            }
+      
+          })
+
+          // $.ajax({   
+          //   url: "./libraries/php/exchangeRateUpdate.php",
+          //   type: 'POST',
+          //   dataType: 'json',
+            
+          //   success: function(result) {
+      
+          //       // console.log(JSON.stringify(result));
+
+          //       if (result.status.name == 'ok') {
+
+                
+                  
+          //         for(const currency of result.data ) {
+
+                      
+          //           $('#exchangeRate').append(`<option id="${currency[0]}" value="${currency[2]}">${currency[1]}</option>`);
+
+                    
+          //       } 
+                                                                        
+      
+          //       }         
+      
+          //   },
+          //   error: function(jqXHR, textStatus, errorThrown) {
+                
+          //       console.log(jqXHR);
+          //   }
+      
+          // })
+
+          // Next one here
+
+        }    
+  
+      }
+
+    })
+   
+
+  
+
+} // This is the end of the function above for latitude and longitude
+
+// This is the end of the document ready call
 })
+
+
 
 
 

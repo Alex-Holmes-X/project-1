@@ -6,8 +6,9 @@
     $executionStartTime = microtime(true);
 
     // Url for location data
-    $url = 'https://api.opencagedata.com/geocode/v1/json?q=' . $_REQUEST['latitude'] . '%2C+' . $_REQUEST['longitude'] . '&key=4acb3442515c43a8bc51e9c18f27df90&pretty=1';
+    // $url = 'https://api.opencagedata.com/geocode/v1/json?q=' . $_REQUEST['latitude'] . '%2C+' . $_REQUEST['longitude'] . '&key=4acb3442515c43a8bc51e9c18f27df90&pretty=1';
 
+    $url = 'http://api.geonames.org/countryCodeJSON?formatted=true&lat=' . $_REQUEST['latitude'] . '&lng=' . $_REQUEST['longitude'] .'&username=ajay81&style=full';
     
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);

@@ -1,3 +1,3 @@
-1) Cant seem to access the array with the oject inside, if i can do this then i can add the
-   exchange rates dynamicaly - Or just use the template ?
+1) Can populate the drop down list of holidays but then it keeps adding new data
+
 2) Cant seem to add a pre-loader ??? no idea why 

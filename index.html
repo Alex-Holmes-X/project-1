@@ -29,7 +29,11 @@
     <link rel="stylesheet" href="vendors/Leaflet.markercluster-1.4.1/dist/MarkerCluster.css">
     <link rel="stylesheet" href="vendors/Leaflet.markercluster-1.4.1/dist/MarkerCluster.Default.css">
     
+    <!-- Leaflet Markers-->
+    <link rel="stylesheet" href="vendors/Leaflet.ExtraMarkers-master/dist/css/leaflet.extra-markers.min.css">
     
+    <!-- Easy Button-->
+    <link rel="stylesheet" href="./node_modules/leaflet-easybutton/src/easy-button.css">
 
     <!-- CSS Import-->
     <link rel="stylesheet" href="libraries/css/style.css">
@@ -48,11 +52,11 @@
       
       <div id="map"></div>
 
-      
+      <!-- data-bs-keyboard="false" this makes it so you cant close the modal !!-->
 
       <!-- Population Modal-->
 
-      <div id="countryInfoModal" class="modal" data-bs-backdrop="false" tabindex="-1" data-bs-backdrop="false" aria-labelledby="countryInfoModalLabel" aria-hidden="true">  
+      <div id="countryInfoModal" class="modal fade" data-bs-backdrop="false" data-bs-backdrop="false"  tabindex="-1" data-bs-backdrop="false" aria-labelledby="countryInfoModalLabel" aria-hidden="true">  
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">          
           <div class="modal-content shadow">            
             <div class="modal-header bg-success bg-gradient text-white">
@@ -153,11 +157,7 @@
 
       <!-- News Modal -->
 
-      <div id="newsModal" class="modal fade" tabindex="-1" data-bs-backdrop="false" data-bs-keyboard="false" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  
-        <!--   the last two classes centre the modal and, if the content is too long, ensures  -->
-        <!--   that the header and footer are always on display by making the body scroll -->
-        
+      <div id="newsModal" class="modal fade" tabindex="-1" data-bs-backdrop="false" aria-labelledby="exampleModalLabel" aria-hidden="true">        
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">             
           <div class="modal-content shadow">            
             <div class="modal-header bg-danger bg-gradient text-white">
@@ -259,7 +259,7 @@
 
       <!-- Weather Modal --> <!-- TODO Add in wind speed and any other info-->
 
-      <div id="weatherModal" class="modal fade" tabindex="-1" data-bs-backdrop="false" data-bs-keyboard="false" aria-labelledby="weatherModalLabel" aria-hidden="true">    
+      <div id="weatherModal" class="modal fade" tabindex="-1" data-bs-backdrop="false"  aria-labelledby="weatherModalLabel" aria-hidden="true">    
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">          
           <div class="modal-content shadow">                    
             <div class="modal-header bg-primary bg-gradient text-white">
@@ -322,7 +322,7 @@
              </div>             
             </div>            
             <div class="modal-footer">
-              <p class="fs-6 fw-light">Last updated<span id="lastUpdated"></span>. Powered by <a href="https://www.weatherapi.com/" target="_blank" title="Free Weather API">WeatherAPI.com</a></p>
+              <p class="fs-6 fw-light">Last updated <span id="lastUpdated"></span>. Powered by <a href="https://www.weatherapi.com/" target="_blank" title="Free Weather API">WeatherAPI.com</a></p>
             </div>      
           </div>            
         </div>        
@@ -331,7 +331,7 @@
 
       <!-- Currency Convertor Modal -->
 
-      <div id="currencyModal" class="modal fade" tabindex="-1" data-bs-backdrop="false" data-bs-keyboard="false" aria-labelledby="currencyModalLabel" aria-hidden="true">
+      <div id="currencyModal" class="modal fade" tabindex="-1" data-bs-backdrop="false"  aria-labelledby="currencyModalLabel" aria-hidden="true">
         <!--   the last two classes centre the modal and, if the content is too long, ensures  -->
         <!--   that the header and footer are always on display by making the body scroll -->      
         <div class="modal-dialog modal-sm modal-dialog-centered modal-dialog-scrollable">      
@@ -344,61 +344,11 @@
               <form>      
                 <div class="form-floating mb-3">      
                   <input id="fromAmount" type="number" class="form-control" value="1" min="1" step="1">
-                  <label >From USD</label>      
+                  <label >From <span id="localCurrency"></span></label>      
                 </div>      
                 <div class="form-floating mb-3">      
                   <select id="exchangeRate" class="form-select">
-                    <!-- <option value='300.44825'>Argentine Peso</option>
-                    <option value='1.913594'>Australian Dollar</option>
-                    <option value='0.470535'>Bahraini Dinar</option>
-                    <option value='17.225451'>Botswana Pula</option>
-                    <option value='6.307207'>Brazilian Real</option>
-                    <option value='1.688601'>Bruneian Dollar</option>
-                    <option value='2.282091'>Bulgarian Lev</option>
-                    <option value='1.692578'>Canadian Dollar</option>
-                    <option value='1009.438823'>Chilean Peso</option>
-                    <option value='8.888399'>Chinese Yuan Renminbi</option>
-                    <option value='5528.940329'>Colombian Peso</option>
-                    <option value='27.636701'>Czech Koruna</option>
-                    <option value='8.689852'>Danish Krone</option>
-                    <option value='4.595847'>Emirati Dirham</option>
-                    <option value='1.166815'>Euro</option>
-                    <option value='9.801109'>Hong Kong Dollar</option>
-                    <option value='432.709138'>Hungarian Forint</option>
-                    <option value='174.678675'>Icelandic Krona</option>
-                    <option value='103.081588'>Indian Rupee</option>
-                    <option value='18669.170443'>Indonesian Rupiah</option>
-                    <option value='52925.669587'>Iranian Rial</option>
-                    <option value='4.688887'>Israeli Shekel</option>
-                    <option value='173.774594'>Japanese Yen</option>
-                    <option value='561.809857'>Kazakhstani Tenge</option>
-                    <option value='0.384916'>Kuwaiti Dinar</option>
-                    <option value='6.039288'>Libyan Dinar</option>
-                    <option value='5.773178'>Malaysian Ringgit</option>
-                    <option value='57.582621'>Mauritian Rupee</option>
-                    <option value='21.994095'>Mexican Peso</option>
-                    <option value='165.007852'>Nepalese Rupee</option>
-                    <option value='2.072121'>New Zealand Dollar</option>
-                    <option value='13.935341'>Norwegian Krone</option>
-                    <option value='0.481775'>Omani Rial</option>
-                    <option value='356.775593'>Pakistani Rupee</option>
-                    <option value='70.206283'>Philippine Peso</option>
-                    <option value='5.291117'>Polish Zloty</option>
-                    <option value='4.555176'>Qatari Riyal</option>
-                    <option value='5.793038'>Romanian New Leu</option>
-                    <option value='101.307599'>Russian Ruble</option>
-                    <option value='4.692832'>Saudi Arabian Riyal</option>
-                    <option value='1.688601'>Singapore Dollar</option>
-                    <option value='24.619532'>South African Rand</option>
-                    <option value='1649.696284'>South Korean Won</option>
-                    <option value='369.011498'>Sri Lankan Rupee</option>
-                    <option value='13.603793'>Swedish Krona</option>
-                    <option value='1.13769'>Swiss Franc</option>
-                    <option value='38.436967'>Taiwan New Dollar</option>
-                    <option value='43.351356'>Thai Baht</option>
-                    <option value='8.476306'>Trinidadian Dollar</option>
-                    <option value='26.057917'>Turkish Lira</option>
-                    <option value='1.251422'>US Dollar</option> -->
+                   <!-- Data is dynamically added here-->
                   </select>                  
                   <label for="exchangeRate">Convert to</label>      
                 </div>      
@@ -414,6 +364,37 @@
           </div>      
         </div>      
       </div>
+
+      <!-- Public holidays Modal-->
+
+      <div id="publicHolidayModal" class="modal fade" data-bs-backdrop="false" data-bs-backdrop="false"  tabindex="-1" data-bs-backdrop="false" aria-labelledby="countryInfoModalLabel" aria-hidden="true">  
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">          
+          <div class="modal-content shadow">            
+            <div class="modal-header bg-info bg-gradient text-white">
+              <h5 class="modal-title"><i class="fa-solid fa-sun fa-xl me-2"></i>Local Holidays</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>            
+            <div class="modal-body">              
+              <div id="pre-load"></div>              
+              <table class="table table-striped">                
+                    <tr>                    
+                        <td class="text-start">Holiday</td>
+                        <td class="text-start">Date</td>
+                    <tr>
+                        <td id="holidayName"></td>
+                        <td id="holidayDate"></td>
+                    </tr>
+                    
+                 </tr>
+
+              </table>              
+            </div>            
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-success btn-sm" data-bs-dismiss="modal">Close</button>
+            </div>            
+          </div>          
+        </div>        
+      </div>
       
       
      <!-- Leaflet JS -->     
@@ -426,14 +407,19 @@
 
      <!-- JS Imports  -->
      <script src="https://kit.fontawesome.com/113e030a4b.js" crossorigin="anonymous"></script>
-     <script type="application/javascript" src="./node_modules/jquery/dist/jquery.min.js"></script>
-     <script type="application/javascript" src="./libraries/js/script.js"></script>     
+     <script type="application/javascript" src="./node_modules/jquery/dist/jquery.min.js"></script>    
      <script src="./node_modules/@popperjs/"></script>
      <script src="./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
      <script src="./node_modules/numeral/numeral.js"></script>
-     <script src="./libraries/js/date-en-GB.js"></script>
+     <script src="./libraries/js/date.js"></script>
      <script src="vendors/Leaflet.markercluster-1.4.1/dist/leaflet.markercluster.js"></script>
-</body>
+     <script src="vendors/Leaflet.ExtraMarkers-master/dist/js/leaflet.extra-markers.min.js"></script>
+     <script src="./node_modules/leaflet-easybutton/src/easy-button.js"></script>
+     
+     
+     <script type="application/javascript" src="./libraries/js/script.js"></script> 
+    
+    </body>
 
 
 </html>

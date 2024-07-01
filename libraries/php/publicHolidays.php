@@ -6,23 +6,29 @@
     $executionStartTime = microtime(true);
 
     // Url for location data
-    // $url = 'https://v6.exchangerate-api.com/v6/02a67979426e6aac5e5347df/latest/GBP';
-
-    //Dynamic Call
-    
-    $url = 'https://v6.exchangerate-api.com/v6/02a67979426e6aac5e5347df/latest/' . $_REQUEST['currency'] . '/';
+    $url = 'https://api.api-ninjas.com/v1/holidays?country=' .$_REQUEST['country'] .'&year=2024'; 
 
     
     $ch = curl_init();
+    curl_setopt($ch, CURLOPT_HTTPHEADER,array('X-Api-Key : JE2F+mZToBM002gHJJzTwQ==iNrHKwt9htESK6Ek'));
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_URL,$url);
 
     $result = curl_exec($ch);
 
+    function compare($a, $b) {    //This function is used to sort the list by letters
+        if ($a["date"] == $b["date"]) return 0;
+        return ($a["date"] < $b["date"]) ? -1 : 1;
+
+    };
+
+
     curl_close($ch);
 
     $decode = json_decode($result, true);
+
+    usort($decode, "compare"); 
 
     $output['status']['code'] = "200";
     $output['status']['name'] = "ok";
@@ -34,4 +40,6 @@
     header('Content-Type: application/json; charset=UTF-8');
 
 	echo json_encode($output); 
+
+
 ?>

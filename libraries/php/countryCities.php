@@ -6,11 +6,7 @@
     $executionStartTime = microtime(true);
 
     // Url for location data
-    // $url = 'https://v6.exchangerate-api.com/v6/02a67979426e6aac5e5347df/latest/GBP';
-
-    //Dynamic Call
-    
-    $url = 'https://v6.exchangerate-api.com/v6/02a67979426e6aac5e5347df/latest/' . $_REQUEST['currency'] . '/';
+    $url = 'http://api.geonames.org/searchJSON?formatted=true&q=city&maxRows=200&lang=en&country=' . $_REQUEST['country'] .'&username=ajay81&style=full';
 
     
     $ch = curl_init();
@@ -28,10 +24,12 @@
     $output['status']['name'] = "ok";
     $output['status']['description'] = "success";
     $output['status']['returnedIn'] = intval((microtime(true) - $executionStartTime) * 1000) . " ms";
-    $output['data'] = $decode;
+    $output['data'] = $decode['geonames'];
     $output['url'] = $url;
 
     header('Content-Type: application/json; charset=UTF-8');
 
 	echo json_encode($output); 
+
+
 ?>

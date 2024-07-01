@@ -9,7 +9,7 @@
     // Url for location data
     // $url = 'http://api.weatherapi.com/v1/future.json?key='.$apiKey.'&q=leeds&dt=2024-07-30';
 
-    $url = 'http://api.weatherapi.com/v1/forecast.json?key=' .$apiKey .'&q=' . $_REQUEST['latitude'] . ',' . $_REQUEST['longitude'] . '&days=3&aqi=no&alerts=no';
+    $url = 'http://api.weatherapi.com/v1/forecast.json?key=' .$apiKey .'&q=' . $_REQUEST['capital']. '&days=3&aqi=no&alerts=no';
     
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
