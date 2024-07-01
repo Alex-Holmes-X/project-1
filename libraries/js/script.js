@@ -167,11 +167,18 @@ $(document).ready(function() {
                           
                       for (const location of result.data) {
                         
+                        var myStyle = {
+                          "color": "#00b8d0",
+                          "weight": 5,
+                          "opacity": 0.65
+                      };
 
                         if(location.properties.iso_a2 === currentIsoLocation) {
                           var mapData = location.geometry;
 
-                          L.geoJSON(mapData).addTo(map);
+                          L.geoJSON(mapData, {
+                            style: myStyle
+                          }).addTo(map);
                         } 
                       }
                       
