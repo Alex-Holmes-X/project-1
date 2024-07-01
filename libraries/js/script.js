@@ -156,6 +156,7 @@ var holidayDates = [];
 
 $(document).ready(function() { 
 
+
   map.locate({
     setView: true, 
     maxZoom: 6,

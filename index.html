@@ -6,16 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     
     <title>Gazetteer</title>
-
-    <!-- <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script> -->
-
-    <!-- Favicon Icon--> <!-- TODO Icon doesnt seem to work-->
-    <!-- <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest"> -->
     
+    <!-- Favicon Icon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22256%22 height=%22256%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2250%22 fill=%22%2300bcff%22></rect><path fill=%22%23fff%22 d=%22M79.00 38.43L64.94 38.43Q64.27 36.10 63.06 34.29Q61.84 32.49 60.10 31.22Q58.36 29.96 56.14 29.29Q53.92 28.62 51.23 28.62L51.23 28.62Q46.21 28.62 42.43 31.11Q38.64 33.60 36.53 38.35Q34.42 43.10 34.42 49.94L34.42 49.94Q34.42 56.78 36.50 61.57Q38.57 66.36 42.38 68.87Q46.18 71.38 51.36 71.38L51.36 71.38Q56.06 71.38 59.40 69.70Q62.74 68.03 64.51 64.96Q66.28 61.89 66.28 57.70L66.28 57.70L69.10 58.12L52.22 58.12L52.22 47.70L79.61 47.70L79.61 55.94Q79.61 64.57 75.97 70.76Q72.32 76.94 65.93 80.28Q59.54 83.62 51.29 83.62L51.29 83.62Q42.09 83.62 35.12 79.55Q28.16 75.47 24.27 67.95Q20.39 60.42 20.39 50.06L20.39 50.06Q20.39 42.11 22.71 35.86Q25.02 29.61 29.21 25.26Q33.40 20.92 38.96 18.65Q44.52 16.38 51.01 16.38L51.01 16.38Q56.57 16.38 61.36 17.99Q66.16 19.61 69.88 22.55Q73.60 25.49 75.97 29.53Q78.33 33.57 79.00 38.43L79.00 38.43Z%22></path></svg>" />
 
+    <!-- CSS Import-->
+    <link rel="stylesheet" href="libraries/css/style.css">
     
     <!-- Bootstrap--> <!-- NOTE Make sure to import both this and the script line below -->
     <link rel="stylesheet" href="vendors/bootstrap-5.3.3-dist/css/bootstrap.min.css">
@@ -35,12 +31,11 @@
     <!-- Easy Button-->
     <link rel="stylesheet" href="./node_modules/leaflet-easybutton/src/easy-button.css">
 
-    <!-- CSS Import-->
-    <link rel="stylesheet" href="libraries/css/style.css">
+    
 
 </head>
 <body>
-    <!-- <div id="preloader"></div> -->
+    <span class="loader"></span>
 
     <span id="selectContainer">
         <select id="countrySelect" class="form-select shadow-sm">
