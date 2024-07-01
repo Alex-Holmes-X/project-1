@@ -1,0 +1,2 @@
+1) Cant seem to access the array with the oject inside, if i can do this then i can add the
+   exchange rates dynamicaly - Or just use the template ? 
