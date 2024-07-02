@@ -1,22 +1,13 @@
 //---------------------------------------------------------
-// preloader
-//---------------------------------------------------------
-// var loader = document.getElementById("loader");
-// var showMap = document.getElementById('map');
-
-// window.addEventListener("load", function() {
-//   loader.style.display = none;
-//   showMap.style.display = contents;
-// });
-
-
-//---------------------------------------------------------
 // Leaflet Map 
 //---------------------------------------------------------
 
 var map = L.map('map').fitWorld();
 
-// TODO maybe move this into the document ready section
+map.locate({
+  setView: true, 
+  maxZoom: 6,
+});
 
 
 //---------------------------------------------------------
@@ -116,8 +107,10 @@ var cityIcon = L.ExtraMarkers.icon({
 
 layerControl = L.control.layers(basemaps,overlays).addTo(map);
 
-airports.addTo(map);
-cities.addTo(map);
+
+map.addLayer(airports);
+map.addLayer(cities);
+
 
 
 
@@ -148,8 +141,9 @@ $('#exampleModal').on('hidden.bs.modal', function () {
  $('#fromAmount').val(1);
 });
 
+// Global Variables 
 var currentIsoLocation = '';
-var mapData = null;
+var border = null;
 var localCurrency = null;
 var holidayNames = [];
 var holidayDates = [];
@@ -157,12 +151,7 @@ var holidayDates = [];
 $(document).ready(function() { 
 
 
-  map.locate({
-    setView: true, 
-    maxZoom: 6,
-  });
-
-    // TODO make the change event here on initial load
+ 
 
     // This is used to find the current position
     navigator.geolocation.getCurrentPosition(showNewPosition);
@@ -336,7 +325,7 @@ $(document).ready(function() {
               
               success: function(result) {
         
-                  console.log(JSON.stringify(result));
+                  // console.log(JSON.stringify(result));
         
                   if (result.status.name == 'ok') {
                     
@@ -408,7 +397,7 @@ $(document).ready(function() {
                 
                     })
 
-                    // $.ajax({   
+                    // $.ajax({    // NOTE Turn On Currency
                     //   url: "./libraries/php/currencyRates.php",
                     //   type: 'POST',
                     //   dataType: 'json',
@@ -476,8 +465,8 @@ $(document).ready(function() {
 
             
 
-            $.ajax({   
-              url: "./libraries/php/latestNewsInfo.php",
+            $.ajax({   // NOTE Turn On News
+              // url: "./libraries/php/latestNewsInfo.php",
               type: 'POST',
               dataType: 'json',
               data: {
@@ -544,7 +533,7 @@ $(document).ready(function() {
 
             
 
-            // $.ajax({   
+            // $.ajax({    // NOTE Turn On Currency
             //   url: "./libraries/php/exchangeRateUpdate.php",
             //   type: 'POST',
             //   dataType: 'json',
@@ -592,11 +581,21 @@ $(document).ready(function() {
 // This is the end of the document ready call
 })
 
+function deleteTableData () {
+  var table = document.getElementById('holidayTable');
+  table.remove();
+}
+
 
 $('#countrySelect').on('change', function() {
 
-  // TODO Change border to clear
-  
+  if (border) {
+    border.clearLayers();
+    airports.clearLayers();
+    cities.clearLayers();
+  }
+
+
   
 
   navigator.geolocation.getCurrentPosition(showNewPosition);
@@ -632,6 +631,9 @@ $('#countrySelect').on('change', function() {
           // console.log(currentIsoLocation);
           
           // Function for creating the airports (uses the current location from this call)
+          
+
+          
           function getAirports () {
             $.ajax({
               url: "./libraries/php/countryAirports.php",
@@ -642,12 +644,16 @@ $('#countrySelect').on('change', function() {
               },                
               success: function(result) {            
                   // console.log(JSON.stringify(result));            
-                  if (result.status.name == 'ok') {            
-                    result.data.forEach(function (item) {
+                  if (result.status.name == 'ok') {          
+
+                    airports.addLayer(
+                      
+                      result.data.forEach(function (item) {
                       L.marker([item.lat, item.lng], { icon: airportIcon })
                         .bindTooltip(item.name, { direction: "top", sticky: true })
                         .addTo(airports);                          
-                    });
+                    }))
+                    
 
                     
                   }            
@@ -671,22 +677,25 @@ $('#countrySelect').on('change', function() {
               },
               success: function (result) {  
                 if (result.status.code == 200) {
+
+                  cities.addLayer(
+                    result.data.forEach(function (item) {
+                      if(item.population > 100000){
+                        L.marker([item.lat, item.lng], { icon: cityIcon })
+                        .bindTooltip(
+                          "<div class='col text-center'><strong>" +
+                            item.toponymName +
+                            "</strong><br><i>(" +
+                            numeral(item.population).format("0,0") +
+                            ")</i></div>",
+                          { direction: "top", sticky: true }
+                        )
+                        .addTo(cities);
+                      }
+                      
+                    })
+                  );
                   
-                  result.data.forEach(function (item) {
-                    if(item.population > 100000){
-                      L.marker([item.lat, item.lng], { icon: cityIcon })
-                      .bindTooltip(
-                        "<div class='col text-center'><strong>" +
-                          item.toponymName +
-                          "</strong><br><i>(" +
-                          numeral(item.population).format("0,0") +
-                          ")</i></div>",
-                        { direction: "top", sticky: true }
-                      )
-                      .addTo(cities);
-                    }
-                    
-                  });
                 } 
               },
               error: function (jqXHR, textStatus, errorThrown) {
@@ -709,8 +718,11 @@ $('#countrySelect').on('change', function() {
                 
       
                 // console.log(JSON.stringify(result));
-                
+
+         
                 if (result.status.name == 'ok') {
+
+                 border = L.markerClusterGroup();
                         
                     for (const location of result.data) {
                       
@@ -723,10 +735,13 @@ $('#countrySelect').on('change', function() {
                       if(location.properties.iso_a2 === currentIsoLocation) {
                         mapData = location.geometry;
 
-
-                        L.geoJSON(mapData, {
+                        border.addLayer(L.geoJSON(mapData, {
                           style: myStyle
-                        }).addTo(map);
+                        }))
+                        map.addLayer(border);
+                        
+
+                      
                       } 
                     }
                     
@@ -854,7 +869,7 @@ $('#countrySelect').on('change', function() {
                     }
                   })
 
-                  // $.ajax({   
+                  // $.ajax({    // NOTE Turn On Currency
                   //   url: "./libraries/php/currencyRates.php",
                   //   type: 'POST',
                   //   dataType: 'json',
@@ -891,20 +906,37 @@ $('#countrySelect').on('change', function() {
                     
                     success: function(result) {
               
-                        console.log(JSON.stringify(result));
+                        // console.log(JSON.stringify(result));
 
 
               
                         if (result.status.name == 'ok') {
                             console.log(countryCode);
+
+
+                            function addRow(tableId, holidayName) {
+                              var tableRef = document.getElementById(tableId)
+                              var newRow = tableRef.insertRow()
+                              var newCell = newRow.insertCell()
+                              let newText = document.createTextNode(holidayName);
+                              newCell.appendChild(newText);
+                            }
+
+                           var tableCheck = document.getElementById('holidayTable');
+
+                           if(tableCheck.rows.length > 0) {
+                            $('holidayTable tr').remove();
+                            
+                           }
                                                                              
 
                           for(const holiday of result.data) {
                             var holidayDate = Date.parse(holiday.date).toString("MMMM dS")
                             
-                            $('#holidayName').append(`<option>${holiday.name}</option>`);
-                            $('#holidayDate').append(`<option>${holidayDate}</option>`);
-                        }
+                            // $('#holidayName').append(`<option>${holiday.name}</option>`);
+                            // $('#holidayDate').append(`<option>${holidayDate}</option>`);
+                            addRow('holidayTable',`${holiday.name} - ${holidayDate}`);
+                          }
                           
                           
                           }
@@ -931,8 +963,8 @@ $('#countrySelect').on('change', function() {
 
           
 
-          $.ajax({   
-            url: "./libraries/php/latestNewsInfo.php",
+          $.ajax({    // NOTE Turn On News
+            // url: "./libraries/php/latestNewsInfo.php",
             type: 'POST',
             dataType: 'json',
             data: {
@@ -997,7 +1029,7 @@ $('#countrySelect').on('change', function() {
       
           })
 
-          // $.ajax({   
+          // $.ajax({   // NOTE Turn On Currency
           //   url: "./libraries/php/exchangeRateUpdate.php",
           //   type: 'POST',
           //   dataType: 'json',

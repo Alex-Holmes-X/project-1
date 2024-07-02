@@ -13,7 +13,7 @@
     <!-- CSS Import-->
     <link rel="stylesheet" href="libraries/css/style.css">
     
-    <!-- Bootstrap--> <!-- NOTE Make sure to import both this and the script line below -->
+    <!-- Bootstrap--> <!-- Make sure to import both this and the script line below -->
     <link rel="stylesheet" href="vendors/bootstrap-5.3.3-dist/css/bootstrap.min.css">
 
     <!-- Leaflet Import-->
@@ -35,7 +35,8 @@
 
 </head>
 <body>
-    <span class="loader"></span>
+   <div id="preloader"></div>
+
 
     <span id="selectContainer">
         <select id="countrySelect" class="form-select shadow-sm">
@@ -252,7 +253,7 @@
         </div>        
       </div>
 
-      <!-- Weather Modal --> <!-- TODO Add in wind speed and any other info-->
+      <!-- Weather Modal -->
 
       <div id="weatherModal" class="modal fade" tabindex="-1" data-bs-backdrop="false"  aria-labelledby="weatherModalLabel" aria-hidden="true">    
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">          
@@ -371,8 +372,8 @@
             </div>            
             <div class="modal-body">              
               <div id="pre-load"></div>              
-              <table class="table table-striped">                
-                    <tr>                    
+              <table id='holidayTable' class="table table-striped">                
+                    <!-- <tr>                    
                         <td class="text-start">Holiday</td>
                         <td class="text-start">Date</td>
                     <tr>
@@ -380,7 +381,7 @@
                         <td id="holidayDate"></td>
                     </tr>
                     
-                 </tr>
+                 </tr> -->
 
               </table>              
             </div>            
