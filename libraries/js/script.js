@@ -397,61 +397,8 @@ $(document).ready(function() {
                 
                     })
 
-                    // $.ajax({    // NOTE Turn On Currency
-                    //   url: "./libraries/php/currencyRates.php",
-                    //   type: 'POST',
-                    //   dataType: 'json',
-                    //   data: {
-                    //     currency: localCurrency,
-                    //   },
-                      
-                    //   success: function(result) {
-                
-                    //       console.log(JSON.stringify(result));
-        
-                    //       if (result.status.name == 'ok') {                 
-                    //         console.log(localCurrency);
-                    //         $('#localCurrency').html(localCurrency);
-                            
-                    //       }         
-                
-                    //   },
-                    //   error: function(jqXHR, textStatus, errorThrown) {
-                          
-                    //       console.log(jqXHR);
-                    //   }
-                
-                    // })
 
-                    // $.ajax({
-                    //   url: "./libraries/php/publicHolidays.php",
-                    //   type: 'POST',
-                    //   dataType: 'json',
-                    //   data: {
-                    //     country: countryCode,
-                    //   },
-                      
-                    //   success: function(result) {
-                
-                    //       console.log(JSON.stringify(result));
-                
-                    //       if (result.status.name == 'ok') {
-                              
-                    //         for(const holiday of result.data) {
-                    //           var holidayDate = Date.parse(holiday.date).toString("MMMM dS")
-                              
-                    //           $('#holidayName').append(`<option>${holiday.name}</option>`);
-                    //           $('#holidayDate').append(`<option>${holidayDate}</option>`)
-                    //       }
-                            
-                    //         }
-                
-                    //   },
-                    //   error: function(jqXHR, textStatus, errorThrown) {
-                          
-                    //       console.log(jqXHR);
-                    //   }
-                    // })
+
 
                   }         
         
@@ -465,8 +412,8 @@ $(document).ready(function() {
 
             
 
-            $.ajax({   // NOTE Turn On News
-              // url: "./libraries/php/latestNewsInfo.php",
+            $.ajax({   
+              url: "./libraries/php/latestNewsInfo.php",
               type: 'POST',
               dataType: 'json',
               data: {
@@ -533,37 +480,37 @@ $(document).ready(function() {
 
             
 
-            // $.ajax({    // NOTE Turn On Currency
-            //   url: "./libraries/php/exchangeRateUpdate.php",
-            //   type: 'POST',
-            //   dataType: 'json',
+            $.ajax({    
+              url: "./libraries/php/exchangeRateUpdate.php",
+              type: 'POST',
+              dataType: 'json',
               
-            //   success: function(result) {
+              success: function(result) {
         
-            //       // console.log(JSON.stringify(result));
+                  // console.log(JSON.stringify(result));
 
-            //       if (result.status.name == 'ok') {
+                  if (result.status.name == 'ok') {
 
                   
                     
-            //         for(const currency of result.data ) {
+                    for(const currency of result.data ) {
 
                        
-            //           $('#exchangeRate').append(`<option id="${currency[0]}" value="${currency[2]}">${currency[1]}</option>`);
+                      $('#exchangeRate').append(`<option id="${currency[0]}" value="${currency[2]}">${currency[1]}</option>`);
 
                       
-            //       } 
+                  } 
                                                                           
         
-            //       }         
+                  }         
         
-            //   },
-            //   error: function(jqXHR, textStatus, errorThrown) {
+              },
+              error: function(jqXHR, textStatus, errorThrown) {
                   
-            //       console.log(jqXHR);
-            //   }
+                  console.log(jqXHR);
+              }
         
-            // })
+            })
 
             // Next one here
 
@@ -869,31 +816,6 @@ $('#countrySelect').on('change', function() {
                     }
                   })
 
-                  // $.ajax({    // NOTE Turn On Currency
-                  //   url: "./libraries/php/currencyRates.php",
-                  //   type: 'POST',
-                  //   dataType: 'json',
-                  //   data: {
-                  //     currency: localCurrency,
-                  //   },
-                    
-                  //   success: function(result) {
-              
-                  //       console.log(JSON.stringify(result));
-      
-                  //       if (result.status.name == 'ok') {                 
-                  //         console.log(localCurrency);
-                  //         $('#localCurrency').html(localCurrency);
-                          
-                  //       }         
-              
-                  //   },
-                  //   error: function(jqXHR, textStatus, errorThrown) {
-                        
-                  //       console.log(jqXHR);
-                  //   }
-              
-                  // })
 
 
                   $.ajax({
@@ -963,8 +885,8 @@ $('#countrySelect').on('change', function() {
 
           
 
-          $.ajax({    // NOTE Turn On News
-            // url: "./libraries/php/latestNewsInfo.php",
+          $.ajax({    
+            url: "./libraries/php/latestNewsInfo.php",
             type: 'POST',
             dataType: 'json',
             data: {
@@ -1029,37 +951,37 @@ $('#countrySelect').on('change', function() {
       
           })
 
-          // $.ajax({   // NOTE Turn On Currency
-          //   url: "./libraries/php/exchangeRateUpdate.php",
-          //   type: 'POST',
-          //   dataType: 'json',
+          $.ajax({ 
+            url: "./libraries/php/exchangeRateUpdate.php",
+            type: 'POST',
+            dataType: 'json',
             
-          //   success: function(result) {
+            success: function(result) {
       
-          //       // console.log(JSON.stringify(result));
+                // console.log(JSON.stringify(result));
 
-          //       if (result.status.name == 'ok') {
+                if (result.status.name == 'ok') {
 
                 
                   
-          //         for(const currency of result.data ) {
+                  for(const currency of result.data ) {
 
                       
-          //           $('#exchangeRate').append(`<option id="${currency[0]}" value="${currency[2]}">${currency[1]}</option>`);
+                    $('#exchangeRate').append(`<option id="${currency[0]}" value="${currency[2]}">${currency[1]}</option>`);
 
                     
-          //       } 
+                } 
                                                                         
       
-          //       }         
+                }         
       
-          //   },
-          //   error: function(jqXHR, textStatus, errorThrown) {
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
                 
-          //       console.log(jqXHR);
-          //   }
+                console.log(jqXHR);
+            }
       
-          // })
+          })
 
           // Next one here
 
