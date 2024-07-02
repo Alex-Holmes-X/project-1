@@ -491,8 +491,26 @@ $(document).ready(function() {
 
                   if (result.status.name == 'ok') {
 
+                    function calcResult() {   
+                      $('#toAmount').val(numeral($('#fromAmount').val() * $('#exchangeRate').val()).format("0,0.00"));  
+                    }
+                    $('#fromAmount').on('keyup', function () {
+                      calcResult();
+                    })
+                    $('#fromAmount').on('change', function () {
+                      calcResult();
+                    })
+                    $('#exchangeRate').on('change', function () {
+                      calcResult();
+                    })
+                    $('#exampleModal').on('show.bs.modal', function () {
+                      calcResult();
+                    })
+                    $('#exampleModal').on('hidden.bs.modal', function () {
+                     $('#fromAmount').val(1);
+                    });
                   
-                    
+                    console.log($('#exchangeRate').val());
                     for(const currency of result.data ) {
 
                        
@@ -527,11 +545,6 @@ $(document).ready(function() {
 
 // This is the end of the document ready call
 })
-
-function deleteTableData () {
-  var table = document.getElementById('holidayTable');
-  table.remove();
-}
 
 
 $('#countrySelect').on('change', function() {
@@ -816,6 +829,31 @@ $('#countrySelect').on('change', function() {
                     }
                   })
 
+                  $.ajax({    
+                    url: "./libraries/php/currencyRates.php",
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                      currency: localCurrency,
+                    },
+                    
+                    success: function(result) {
+              
+                        // console.log(JSON.stringify(result));
+      
+                        if (result.status.name == 'ok') {                 
+                          // console.log(localCurrency);
+                          $('#localCurrency').html(localCurrency);
+                          
+                        }         
+              
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        
+                        console.log(jqXHR);
+                    }
+              
+                  })
 
 
                   $.ajax({
@@ -833,7 +871,7 @@ $('#countrySelect').on('change', function() {
 
               
                         if (result.status.name == 'ok') {
-                            console.log(countryCode);
+                            // console.log(countryCode);
 
 
                             function addRow(tableId, holidayName) {
@@ -843,14 +881,7 @@ $('#countrySelect').on('change', function() {
                               let newText = document.createTextNode(holidayName);
                               newCell.appendChild(newText);
                             }
-
-                           var tableCheck = document.getElementById('holidayTable');
-
-                           if(tableCheck.rows.length > 0) {
-                            $('holidayTable tr').remove();
-                            
-                           }
-                                                                             
+                          $('#holidayTable').html("");                                                 
 
                           for(const holiday of result.data) {
                             var holidayDate = Date.parse(holiday.date).toString("MMMM dS")
@@ -951,7 +982,7 @@ $('#countrySelect').on('change', function() {
       
           })
 
-          $.ajax({ 
+          $.ajax({    
             url: "./libraries/php/exchangeRateUpdate.php",
             type: 'POST',
             dataType: 'json',
@@ -962,11 +993,29 @@ $('#countrySelect').on('change', function() {
 
                 if (result.status.name == 'ok') {
 
+                  function calcResult() {   
+                    $('#toAmount').val(numeral($('#fromAmount').val() * $('#exchangeRate').val()).format("0,0.00"));  
+                  }
+                  $('#fromAmount').on('keyup', function () {
+                    calcResult();
+                  })
+                  $('#fromAmount').on('change', function () {
+                    calcResult();
+                  })
+                  $('#exchangeRate').on('change', function () {
+                    calcResult();
+                  })
+                  $('#exampleModal').on('show.bs.modal', function () {
+                    calcResult();
+                  })
+                  $('#exampleModal').on('hidden.bs.modal', function () {
+                   $('#fromAmount').val(1);
+                  });
                 
-                  
+                  console.log($('#exchangeRate').val());
                   for(const currency of result.data ) {
 
-                      
+                     
                     $('#exchangeRate').append(`<option id="${currency[0]}" value="${currency[2]}">${currency[1]}</option>`);
 
                     
@@ -982,6 +1031,7 @@ $('#countrySelect').on('change', function() {
             }
       
           })
+
 
           // Next one here
 
