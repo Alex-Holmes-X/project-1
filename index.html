@@ -44,11 +44,8 @@
         </select>
         
       </span>
-      <!-- populate from an AJAX CALL to a PHP routine that returns a JSON object that is an array of just ISO codes and names from countryBorders.geo.json -->
       
       <div id="map"></div>
-
-      <!-- data-bs-keyboard="false" this makes it so you cant close the modal !!-->
 
       <!-- Population Modal-->
 
@@ -56,7 +53,7 @@
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">          
           <div class="modal-content shadow">            
             <div class="modal-header bg-success bg-gradient text-white">
-              <h5 class="modal-title"><i class="fa-solid fa-circle-info fa-xl me-2"></i>At a glance</h5>
+              <h5 class="modal-title"><i></i>At a glance</h5>
               <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>            
             <div class="modal-body">              
@@ -259,13 +256,15 @@
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">          
           <div class="modal-content shadow">                    
             <div class="modal-header bg-primary bg-gradient text-white">
-                <h5>Weather Forecast</h5>      
+              <div></div>
+                <h5 id="weatherLocation"></h5>
               <h5 class="modal-title" id="weatherModalLabel"></h5>
               <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>      
             </div>      
             <div class="modal-body">              
               <div id="pre-load"></div>      
-              <div class="row">      
+              <div class="row">
+                <!-- <h5>Location: <span id="weatherLocation"></span></h5>       -->
                 <div class="col border m-2">      
                   <p class="fw-bold fs-5 mt-1">TODAY</p>                  
                   <div class="row">                    
@@ -367,15 +366,15 @@
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">          
           <div class="modal-content shadow">            
             <div class="modal-header bg-info bg-gradient text-white">
-              <h5 class="modal-title"><i class="fa-solid fa-sun fa-xl me-2"></i>Local Holidays</h5>
+              <h5 class="modal-title"><i></i>Local Holidays <span id="localHolidayYear"></span></h5>
               <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>            
             <div class="modal-body">              
               <div id="pre-load"></div>              
               <table class="table table-striped">
                 <tbody id='holidayTable'>
-
-                </tbody>                
+                </tbody>
+                               
 
               </table>              
             </div>            

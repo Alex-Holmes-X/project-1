@@ -4,11 +4,6 @@
 
 var map = L.map('map').fitWorld();
 
-map.locate({
-  setView: true, 
-  maxZoom: 6,
-});
-
 
 //---------------------------------------------------------
 // View layers
@@ -162,7 +157,7 @@ $(document).ready(function() {
 
 
     // This call is to create the drop down box options
-    $.ajax({
+    $.ajax({   // Call to create the dropdown menu
       url: "./libraries/php/dropdownMenuCountries.php",
       type: 'POST',
       dataType: 'json',
@@ -202,117 +197,10 @@ $(document).ready(function() {
           // console.log(JSON.stringify(result));
     
           if (result.status.name == 'ok') {
-
-            // currentIsoLocation = result.data.results[0].components['ISO_3166-1_alpha-2'];        
+       
             currentIsoLocation = result.data.countryCode;
             $('#countrySelect').val(currentIsoLocation).change();
             
-            // Function for creating the airports (uses the current location from this call)
-            // function getAirports () {
-            //   $.ajax({
-            //     url: "./libraries/php/countryAirports.php",
-            //     type: 'POST',
-            //     dataType: 'json',
-            //     data: {
-            //       country: currentIsoLocation,
-            //     },                
-            //     success: function(result) {            
-            //         // console.log(JSON.stringify(result));            
-            //         if (result.status.name == 'ok') {            
-            //           result.data.forEach(function (item) {
-            //             L.marker([item.lat, item.lng], { icon: airportIcon })
-            //               .bindTooltip(item.name, { direction: "top", sticky: true })
-            //               .addTo(airports);                          
-            //           });
-
-                      
-            //         }            
-            //     },
-            //     error: function(jqXHR, textStatus, errorThrown) {
-                    
-            //         console.log(jqXHR);
-            //     }
-            //   })
-            // }
-
-            // // Function for creating cities 
-
-            // function getCities() {
-            //   $.ajax({
-            //     url: "./libraries/php/countryCities.php",
-            //     type: "POST",
-            //     dataType: "json",
-            //     data: {
-            //       country: currentIsoLocation 
-            //     },
-            //     success: function (result) {  
-            //       if (result.status.code == 200) {
-                    
-            //         result.data.forEach(function (item) {
-            //           if(item.population > 100000){
-            //             L.marker([item.lat, item.lng], { icon: cityIcon })
-            //             .bindTooltip(
-            //               "<div class='col text-center'><strong>" +
-            //                 item.toponymName +
-            //                 "</strong><br><i>(" +
-            //                 numeral(item.population).format("0,0") +
-            //                 ")</i></div>",
-            //               { direction: "top", sticky: true }
-            //             )
-            //             .addTo(cities);
-            //           }
-                      
-            //         });
-            //       } 
-            //     },
-            //     error: function (jqXHR, textStatus, errorThrown) {
-            //       console.log(jqXHR)
-            //     }
-            //   });
-            // }
-
-            // getAirports();
-            // getCities();
-
-            // $.ajax({   
-            //   url: "./libraries/php/geoJSONCountryBorders.php",
-            //   type: 'POST',
-            //   dataType: 'json',
-              
-            //   success: function(result) {
-        
-            //       // console.log(JSON.stringify(result));
-        
-            //       if (result.status.name == 'ok') {
-                          
-            //           for (const location of result.data) {
-                        
-            //             var myStyle = {
-            //               "color": "#00b8d0",
-            //               "weight": 5,
-            //               "opacity": 0.65
-            //           };
-
-            //             if(location.properties.iso_a2 === currentIsoLocation) {
-            //               mapData = location.geometry;
-
-            //               L.geoJSON(mapData, {
-            //                 style: myStyle
-            //               }).addTo(map);
-            //             } 
-            //           }
-                      
-                                            
-        
-            //       }         
-        
-            //   },
-            //   error: function(jqXHR, textStatus, errorThrown) {
-                  
-            //       console.log(jqXHR);
-            //   }
-        
-            // })
 
 
             $.ajax({   
@@ -358,8 +246,11 @@ $(document).ready(function() {
                       success: function(result) {
                 
                           // console.log(JSON.stringify(result));
-                
-                          if (result.status.name == 'ok') {                   
+                        
+                          if (result.status.name == 'ok') { 
+                            
+                            $('#weatherLocation').html(capitalCity);
+                            
                             
                             // Todays Forcast
                             $('#todayConditions').html(result.data.forecast.forecastday[0].day.condition.text);
@@ -491,24 +382,7 @@ $(document).ready(function() {
 
                   if (result.status.name == 'ok') {
 
-                    function calcResult() {   
-                      $('#toAmount').val(numeral($('#fromAmount').val() * $('#exchangeRate').val()).format("0,0.00"));  
-                    }
-                    $('#fromAmount').on('keyup', function () {
-                      calcResult();
-                    })
-                    $('#fromAmount').on('change', function () {
-                      calcResult();
-                    })
-                    $('#exchangeRate').on('change', function () {
-                      calcResult();
-                    })
-                    $('#exampleModal').on('show.bs.modal', function () {
-                      calcResult();
-                    })
-                    $('#exampleModal').on('hidden.bs.modal', function () {
-                     $('#fromAmount').val(1);
-                    });
+                    calcResult();
                   
                     console.log($('#exchangeRate').val());
                     for(const currency of result.data ) {
@@ -698,7 +572,10 @@ $('#countrySelect').on('change', function() {
                         border.addLayer(L.geoJSON(mapData, {
                           style: myStyle
                         }))
+
+                        
                         map.addLayer(border);
+                        map.fitBounds(border.getBounds(mapData));
                         
 
                       
@@ -762,7 +639,9 @@ $('#countrySelect').on('change', function() {
               
                         // console.log(JSON.stringify(result));
               
-                        if (result.status.name == 'ok') {                   
+                        if (result.status.name == 'ok') {   
+                          
+                          $('#weatherLocation').html(capitalCity);                
                           
                           // Todays Forcast
                           $('#todayConditions').html(result.data.forecast.forecastday[0].day.condition.text);
@@ -818,7 +697,7 @@ $('#countrySelect').on('change', function() {
                           var cityLongitude = (result.data.lng);
                           // console.log(cityLatitude);
 
-                          map.flyTo([cityLatitude, cityLongitude]);
+                          // map.flyTo([cityLatitude, cityLongitude]);
                         
                           }
                 
@@ -866,29 +745,19 @@ $('#countrySelect').on('change', function() {
                     
                     success: function(result) {
               
-                        // console.log(JSON.stringify(result));
+                        console.log(JSON.stringify(result));
 
 
               
                         if (result.status.name == 'ok') {
-                            // console.log(countryCode);
-
-
-                            function addRow(tableId, holidayName) {
-                              var tableRef = document.getElementById(tableId)
-                              var newRow = tableRef.insertRow()
-                              var newCell = newRow.insertCell()
-                              let newText = document.createTextNode(holidayName);
-                              newCell.appendChild(newText);
-                            }
+                            
+                          $('#localHolidayYear').html(result.data[0].year);
                           $('#holidayTable').html("");                                                 
 
                           for(const holiday of result.data) {
-                            var holidayDate = Date.parse(holiday.date).toString("MMMM dS")
-                            
-                            // $('#holidayName').append(`<option>${holiday.name}</option>`);
-                            // $('#holidayDate').append(`<option>${holidayDate}</option>`);
-                            addRow('holidayTable',`${holiday.name} - ${holidayDate}`);
+                            $('#holidayTable')
+                            .append('<tr><td>' + holiday['name'] + '</td><td class="text-end">' + Date.parse(holiday['date']).toString("MMMM dS") + '</td></tr>');
+                                                     
                           }
                           
                           
@@ -993,24 +862,7 @@ $('#countrySelect').on('change', function() {
 
                 if (result.status.name == 'ok') {
 
-                  function calcResult() {   
-                    $('#toAmount').val(numeral($('#fromAmount').val() * $('#exchangeRate').val()).format("0,0.00"));  
-                  }
-                  $('#fromAmount').on('keyup', function () {
-                    calcResult();
-                  })
-                  $('#fromAmount').on('change', function () {
-                    calcResult();
-                  })
-                  $('#exchangeRate').on('change', function () {
-                    calcResult();
-                  })
-                  $('#exampleModal').on('show.bs.modal', function () {
-                    calcResult();
-                  })
-                  $('#exampleModal').on('hidden.bs.modal', function () {
-                   $('#fromAmount').val(1);
-                  });
+                  calcResult();
                 
                   console.log($('#exchangeRate').val());
                   for(const currency of result.data ) {
